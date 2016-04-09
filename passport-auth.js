@@ -2,6 +2,8 @@ var express = require("express");
 var morgan = require("morgan");
 var bodyParser = require("body-parser");
 var mongoose = require("mongoose");
+var cookieParser = require("cookie-parser");
+var jwt = require("jsonwebtoken");
 
 var passport = require("passport");
 var localstrategy = require("passport-local").Strategy;
@@ -11,16 +13,6 @@ var config = require("./passport-config");
 var hostname = process.env.IP || 'localhost';
 var port = process.env.PORT || 3000;
 
-var app = express();
-
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(morgan('dev'));
-app.use(passport.initialize());
-
-//configure passport
-passport.use(new localstrategy(Account.authenticate()));
 
 //connect to database
 mongoose.connect(config.url, function(err, db){
@@ -31,6 +23,19 @@ mongoose.connect(config.url, function(err, db){
 	}
 });
 
+
+var app = express();
+
+app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(morgan('dev'));
+app.use(passport.initialize());
+
+//configure passport
+passport.use(new localstrategy(Account.authenticate()));
+
+
 //routes
 app.get('/', function(req,res){
 	res.send("Home");
@@ -40,15 +45,60 @@ app.post('/register', function(req, res, next) {
   console.log('registering user');
   Account.register(new Account({username: req.body.username}), req.body.password, function(err) {
     if (err) {
-      console.log('error while user register!', err);
+      console.log('error while registering user', err);
       return next(err);
     }
 
-    console.log('user registered!');
-
+    console.log('new user registered');
+    //redirect to home after register
     res.redirect('/');
   });
 });
+
+app.post('/login', passport.authenticate('local', {failureRedirect:'/', session:false}), function(req,res){
+	console.log("user login " + req.user.username);
+	var token = jwt.sign(req.user, config.secret);
+	res.cookie('access', token);
+	res.redirect("/");
+});
+
+app.use(function(req,res,next){
+	
+	var token = req.cookies.access;
+	  if(token){
+	   jwt.verify(token, config.secret, function(err, decoded){
+		 if(err){
+		   return res.json({success:false, message:'Failed to verify token'});
+		 }else {
+		   req.decoded = decoded;
+		   next(); 
+		 }
+	   }); 
+	  }
+
+	  else {
+		return res.status(403).send({
+		  success:false,
+		  message:'No token provided'
+		});
+	  }
+});
+	
+
+
+app.get('/userhome', function(req,res){
+	res.json({
+		success: true, 
+		user: req.decoded._doc.username
+	});
+})
+
+app.get("/logout", function(req,res){
+	console.log('user logged out');
+	req.logout();
+	res.redirect('/');
+});
+
 
 
 app.listen(port, hostname, function(){
