@@ -1,0 +1,18 @@
+doctype html
+html(lang="en")
+  head
+    title= "Home"
+    link(href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css", rel="stylesheet", integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7", crossorigin="anonymous")
+      
+  body
+    .container
+      h1 Welcome
+      
+      h3 LogIn
+      form(role='form' action='/login' method='post')
+        .form-group
+          input.form-control(type='text' name='username' placeholder='Enter Username')
+        .form-group
+          input.form-control(type='password' name='password' placeholder='Password')
+        button.btn.btn-default(type='sumbit') Login
+      div New User? #[a(href='/register') Register]

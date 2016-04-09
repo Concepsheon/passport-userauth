@@ -5,6 +5,7 @@ var mongoose = require("mongoose");
 var cookieParser = require("cookie-parser");
 var jwt = require("jsonwebtoken");
 
+var jade = require("jade");
 var passport = require("passport");
 var localstrategy = require("passport-local").Strategy;
 var Account = require("./app/models/account");
@@ -12,7 +13,6 @@ var Account = require("./app/models/account");
 var config = require("./passport-config");
 var hostname = process.env.IP || 'localhost';
 var port = process.env.PORT || 3000;
-
 
 //connect to database
 mongoose.connect(config.url, function(err, db){
@@ -36,9 +36,17 @@ app.use(passport.initialize());
 passport.use(new localstrategy(Account.authenticate()));
 
 
+app.set('views', __dirname + '/views');
+app.set('view engine', 'jade');
+
 //routes
 app.get('/', function(req,res){
-	res.send("Home");
+	res.render("Home");
+});
+
+
+app.get('/register', function(req,res){
+	res.render('register');
 });
 
 app.post('/register', function(req, res, next) {
@@ -59,7 +67,8 @@ app.post('/login', passport.authenticate('local', {failureRedirect:'/', session:
 	console.log("user login " + req.user.username);
 	var token = jwt.sign(req.user, config.secret);
 	res.cookie('access', token);
-	res.redirect("/");
+	console.log('signed token');
+	res.redirect('/user');
 });
 
 app.use(function(req,res,next){
@@ -71,6 +80,7 @@ app.use(function(req,res,next){
 		   return res.json({success:false, message:'Failed to verify token'});
 		 }else {
 		   req.decoded = decoded;
+		   console.log("token verified");
 		   next(); 
 		 }
 	   }); 
@@ -85,12 +95,9 @@ app.use(function(req,res,next){
 });
 	
 
-
-app.get('/userhome', function(req,res){
-	res.json({
-		success: true, 
-		user: req.decoded._doc.username
-	});
+//protected routes
+app.get('/user', function(req,res){
+	res.render("userhome", {user: req.decoded._doc})
 })
 
 app.get("/logout", function(req,res){

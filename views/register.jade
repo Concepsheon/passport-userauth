@@ -1,0 +1,17 @@
+doctype html
+html(lang="en")
+  head
+    title= "Sign Up"
+    link(href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css", rel="stylesheet", integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7", crossorigin="anonymous")
+      
+  body
+    .container
+      h1 Sign Up
+      
+      form(role='form' action='/register' method='post')
+        .form-group
+          input.form-control(type='text' name='username' placeholder='Enter Username')
+        .form-group
+          input.form-control(type='password' name='password' placeholder='Password')
+        button.btn.btn-default(type='sumbit') Register
+      div#[a(href='/') Cancel]
