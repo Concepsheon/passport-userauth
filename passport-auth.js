@@ -71,8 +71,9 @@ app.post('/login', passport.authenticate('local', {failureRedirect:'/', session:
 	res.redirect('/user');
 });
 
+
+//verify token
 app.use(function(req,res,next){
-	
 	var token = req.cookies.access;
 	  if(token){
 	   jwt.verify(token, config.secret, function(err, decoded){
@@ -98,7 +99,24 @@ app.use(function(req,res,next){
 //protected routes
 app.get('/user', function(req,res){
 	res.render("userhome", {user: req.decoded._doc})
-})
+});
+
+//delete account
+app.get('/confirm', function(req,res){
+	res.render('confirm', {user: req.decoded._doc})
+});
+
+app.post('/confirm', function(req,res){
+	Account.findOneAndRemove({username: req.decoded._doc.username}, function(err, user){
+		if(err){
+			console.log('an error occured could not find user', err);
+			return res.redirect('/user');
+		} else{
+			console.log('user account deactived', user);
+			res.redirect('/logout');
+		}
+	});
+});
 
 app.get("/logout", function(req,res){
 	console.log('user logged out');

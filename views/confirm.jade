@@ -1,0 +1,16 @@
+doctype html
+html(lang="en")
+  head
+    title= "Deactivate Account"
+    link(href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css", rel="stylesheet", integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7", crossorigin="anonymous")
+      
+  body
+    .container
+      h1 Sorry to see you go, #{user.username}
+      
+      
+      form(role='form' action='/confirm' method='post')
+        p Are you sure you want to delete your account?
+        button.btn.btn-default(type='submit') Deactivate Account
+      
+      div #[a(href='/userhome') Cancel]
