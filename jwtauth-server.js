@@ -5,7 +5,7 @@ var jwt = require('jsonwebtoken');
 var morgan = require('morgan');
 
 var config = require('./config');
-var User = require('./app/models/user');
+var Account = require('./app/models/account');
 var app = express();
 
 var port = process.env.PORT || 3000;
@@ -24,7 +24,7 @@ app.get('/', function(req,res) {
 
 app.post('/setup', function(req,res){
   //create new user with mongoose model
-  var nick = new User({
+  var nick = new Account({
     name: req.body.name,
     password: req.body.password,
     admin:true
@@ -48,7 +48,7 @@ var apiRouter = express.Router();
 //token stored on client side and passed to server on every request to server
 
 apiRouter.post('/authenticate', function(req,res){
-  User.findOne({
+  Account.findOne({
     name:req.body.name
   }, function(err,user){
     if(err) throw err;
@@ -99,7 +99,7 @@ apiRouter.get('/', function(req, res){
 });
 
 apiRouter.get('/users', function(req,res){
-  User.find({}, function(err, users){
+  Account.find({}, function(err, users){
     if(err) throw err;
 
     res.json(users);
