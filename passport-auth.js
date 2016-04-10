@@ -51,7 +51,8 @@ app.get('/register', function(req,res){
 
 app.post('/register', function(req, res, next) {
   console.log('registering user');
-  Account.register(new Account({username: req.body.username}), req.body.password, function(err) {
+  if(req.body.password === req.body.confirm){
+	  Account.register(new Account({username: req.body.username}), req.body.password, function(err) {
     if (err) {
       console.log('error while registering user', err);
       return next(err);
@@ -61,6 +62,16 @@ app.post('/register', function(req, res, next) {
     //redirect to home after register
     res.redirect('/');
   });
+  }
+  
+  else {
+	  console.log("passwords didn't match");
+	  return res.json({
+		  success: false,
+		  message: 'Passwords did not match. Try Again'
+	  })
+  }
+  
 });
 
 app.post('/login', passport.authenticate('local', {failureRedirect:'/', session:false}), function(req,res){
