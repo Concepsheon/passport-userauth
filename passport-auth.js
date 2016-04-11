@@ -45,6 +45,13 @@ app.get('/', function(req,res){
 });
 
 
+app.get("/logout", function(req,res){
+	console.log('user logged out');
+	req.logout(); //removes logged in user from req.user
+	res.redirect('/');
+});
+
+
 app.get('/register', function(req,res){
 	res.render('register');
 });
@@ -79,7 +86,7 @@ app.post('/login', passport.authenticate('local', {failureRedirect:'/', session:
 	var token = jwt.sign(req.user, config.secret);
 	res.cookie('access', token);
 	console.log('signed token');
-	res.redirect('/user');
+	res.redirect('/user/' + req.user.username);
 });
 
 
@@ -107,8 +114,9 @@ app.use(function(req,res,next){
 });
 	
 
+
 //protected routes
-app.get('/user', function(req,res){
+app.get('/user/:userId', function(req,res){
 	res.render("userhome", {user: req.decoded._doc})
 });
 
@@ -129,14 +137,10 @@ app.post('/confirm', function(req,res){
 	});
 });
 
-app.get("/logout", function(req,res){
-	console.log('user logged out');
-	req.logout();
-	res.redirect('/');
-});
+
 
 
 
 app.listen(port, hostname, function(){
-	console.log(`Server running at https://${hostname}:${port}`);
+	console.log(`Server running at http://${hostname}:${port}`);
 });
