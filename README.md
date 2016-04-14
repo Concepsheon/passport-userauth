@@ -21,3 +21,10 @@ May have to use Postman or another REST client to use POST to create new user an
 ```
 node passport-auth
 ```
+User authoriaztion with Passport using a JWT instead of server sessions to store user information
+
+#### OAuth with Github
+```
+node index
+```
+Runs a simple API that allows a user to sign in with their Github account
