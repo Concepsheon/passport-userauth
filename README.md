@@ -1,12 +1,12 @@
 # user-authentication
 
-This API uses JSON Web Tokens and the Passport module for authentication
+JSON Web Tokens and the Passport for authentication
 
 #### Clone project
 ```
 clone https://github.com/Concepsheon/passport-userauth.git
 ```
-Before running servers run command ```npm install``` to install all dependencies and run ```mongo``` in background
+Run command ```npm install``` to install all dependencies and run ```mongo``` in background
 
 
 #### Authorization with JSON Web Token
@@ -27,4 +27,4 @@ User authoriaztion with Passport using a JWT instead of server sessions to store
 ```
 node index
 ```
-Runs a simple API that allows a user to sign in with their Github account
+Runs simple authentication that allows a user to sign in with their Github account
